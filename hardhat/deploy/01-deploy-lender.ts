@@ -5,7 +5,6 @@ import { developmentChains, networkConfig } from "../helper-hardhat-config";
 import { verify } from "../utils/verify";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
-  console.log("main");
   const { deployments, getNamedAccounts } = hre;
   const { deploy, log } = deployments;
 
@@ -28,21 +27,30 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // for local testing
 
   // use mock for say chainlink vrf or other smart contracts that our smart contract relies on
-  const args = [ethUsdPriceFeedAddress];
-  const fundMe = await deploy("FundMe", {
+
+  const StableCoin = await deploy("StableCoin", {
+    from: deployer,
+    args: [],
+    log: true,
+    waitConfirmations: network.name === "hardhat" ? 1 : 6,
+  });
+  // console.log(StableCoin.address);
+
+  const args = [StableCoin.address, ethUsdPriceFeedAddress];
+  const Lender = await deploy("Lender", {
     from: deployer,
     args: args, // put price feed address,
     log: true,
     waitConfirmations: network.name === "hardhat" ? 1 : 6,
   });
 
-  if (
-    !developmentChains.includes(network.name) &&
-    process.env.ETHERSCAN_API_KEY
-  ) {
-    // verify
-    await verify(fundMe.address, args);
-  }
+  // if (
+  //   !developmentChains.includes(network.name) &&
+  //   process.env.ETHERSCAN_API_KEY
+  // ) {
+  //   // verify
+  //   await verify(fundMe.address, args);
+  // }
   log("------------------------------");
 };
 export default func;

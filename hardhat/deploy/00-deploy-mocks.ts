@@ -27,7 +27,6 @@ export const mocks: DeployFunction = async function (
     log("Mocks deployed!");
     log("-------------------------");
   }
-  console.log("hi");
 };
 export default mocks;
 mocks.tags = ["all", "mocks"];

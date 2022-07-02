@@ -107,11 +107,15 @@ contract Lender is ILender, Ownable {
     }
 
     function getEthUSDPrice() public view returns (uint256) {
-        uint256 price8 = PriceConverter.getConversionRate(10**18, priceFeed);
-        return price8 * (10**10);
+        uint256 price18 = PriceConverter.getConversionRate(10**18, priceFeed);
+        return price18;
     }
 
     function getToken() external view returns (address) {
         return address(token);
     }
+
+    receive() external payable {}
+
+    fallback() external payable {}
 }
