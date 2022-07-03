@@ -1,10 +1,32 @@
 import React from "react";
+import { Lender } from "../../hardhat/typechain";
+import { useTransactionContext } from "../context/TransactionContext";
 import Input from "./Input";
-
-const handleChange = () => {};
-const handleSubmit = () => {};
+import { ethers } from "ethers";
 
 function DepositModal() {
+  const {
+    connectWallet,
+    connectedAccount,
+    formData,
+    handleChange,
+    isLoading,
+    getLendersContract,
+  } = useTransactionContext();
+
+  const handleSubmit = async () => {
+    const LendersContract = getLendersContract();
+    console.log(formData.depositETH);
+    console.log(
+      await LendersContract.deposit(
+        ethers.utils.parseEther(formData.depositETH),
+        {
+          value: ethers.utils.parseEther(formData.depositETH),
+        }
+      )
+    );
+  };
+
   return (
     <div>
       <input type="checkbox" id="deposit-modal" className="modal-toggle" />
@@ -24,7 +46,7 @@ function DepositModal() {
               name="addressTo"
               type="text"
               // value={addressTo}
-              handleChange={handleChange}
+              handleChange={(e: any) => handleChange(e, "depositETH")}
             />
             <button
               type="button"

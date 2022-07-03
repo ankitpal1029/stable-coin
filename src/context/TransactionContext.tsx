@@ -1,7 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { Lender, MockV3Aggregator, StableCoin } from "../../hardhat/typechain";
 
 import { ethers } from "ethers";
-import { contractABI, contractAddress } from "../utils/constants";
+import {
+  contractABI,
+  contractAddress,
+  lenderContractABI,
+  lenderContractAddrsss,
+} from "../utils/constants";
+import { sign } from "crypto";
 
 interface ITransactionContext {
   connectWallet: () => void;
@@ -11,15 +18,14 @@ interface ITransactionContext {
   handleChange: (e: any, name: string) => void;
   // sendTransaction: () => void;
   getEthereumContract: () => void;
+  getLendersContract: () => void;
   transactions: any[];
   isLoading: boolean;
 }
 
 interface IFormData {
-  addressTo: string;
-  amount: string;
-  keyword: string;
-  message: string;
+  depositETH: string;
+  returnYUSD: string;
 }
 declare global {
   interface Window {
@@ -29,11 +35,12 @@ declare global {
 export const TransactionContext = createContext<ITransactionContext>({
   connectWallet: () => {},
   connectedAccount: "",
-  formData: { addressTo: "", amount: "", keyword: "", message: "" },
+  formData: { depositETH: "", returnYUSD: "" },
   setFormData: "",
   handleChange: () => {},
   // sendTransaction: () => {},
   getEthereumContract: () => {},
+  getLendersContract: () => {},
   transactions: [],
   isLoading: false,
 });
@@ -55,13 +62,24 @@ const getEthereumContract = () => {
   return TransactionContract;
 };
 
+const getLendersContract = () => {
+  console.log(ethereum);
+  const provider = new ethers.providers.Web3Provider(ethereum);
+  const signer = provider.getSigner();
+  const LendersContract = new ethers.Contract(
+    lenderContractAddrsss,
+    lenderContractABI,
+    signer
+  );
+  console.log({ provider, signer, LendersContract });
+  return LendersContract;
+};
+
 export const TransactionProvider = ({ children }: { children: any }) => {
   const [connectedAccount, setConnectedAccount] = useState<string>("");
   const [formData, setFormData] = useState<IFormData>({
-    addressTo: "",
-    amount: "",
-    keyword: "",
-    message: "",
+    depositETH: "",
+    returnYUSD: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [transactionCount, setTransactionCount] = useState<string | null>(
@@ -70,6 +88,7 @@ export const TransactionProvider = ({ children }: { children: any }) => {
   const [transactions, setTransactions] = useState<any[]>([]);
 
   const handleChange = (e: any, name: string) => {
+    console.log(name);
     setFormData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
@@ -87,7 +106,6 @@ export const TransactionProvider = ({ children }: { children: any }) => {
       } else {
         console.log("No Accounts found");
       }
-      // getAllTransactions();
       console.log(accounts);
     } catch (error) {
       console.error(error);
@@ -128,6 +146,7 @@ export const TransactionProvider = ({ children }: { children: any }) => {
         handleChange,
         // sendTransaction,
         getEthereumContract,
+        getLendersContract,
         transactions,
         isLoading,
       }}

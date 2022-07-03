@@ -1,10 +1,27 @@
 import React from "react";
+import { useTransactionContext } from "../context/TransactionContext";
 import Input from "./Input";
-
-const handleChange = () => {};
-const handleSubmit = () => {};
+import { ethers } from "ethers";
 
 function WithdrawModal() {
+  const {
+    connectWallet,
+    connectedAccount,
+    formData,
+    handleChange,
+    isLoading,
+    getLendersContract,
+  } = useTransactionContext();
+
+  const handleSubmit = async () => {
+    const LendersContract = getLendersContract();
+    console.log(formData.returnYUSD);
+    console.log(
+      await LendersContract.withdraw(
+        ethers.utils.parseEther(formData.returnYUSD)
+      )
+    );
+  };
   return (
     <div>
       <input type="checkbox" id="withdraw-modal" className="modal-toggle" />
@@ -24,7 +41,7 @@ function WithdrawModal() {
               name="addressTo"
               type="text"
               // value={addressTo}
-              handleChange={handleChange}
+              handleChange={(e: any) => handleChange(e, "returnYUSD")}
             />
             <button
               type="button"

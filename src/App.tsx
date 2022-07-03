@@ -1,7 +1,6 @@
 import {
   Footer,
   Navbar,
-  Services,
   Welcome,
   DepositModal,
   WithdrawModal,
@@ -14,8 +13,6 @@ const App = () => {
         <Navbar />
         <Welcome />
       </div>
-      {/* <Services /> */}
-      {/* <Transactions /> */}
       <DepositModal />
       <WithdrawModal />
       <Footer />
