@@ -1,6 +1,11 @@
-import { Footer, Navbar, Services, Transactions, Welcome } from "./components";
-import DepositModal from "./components/DepositModal";
-import WithdrawModal from "./components/WithdrawModal";
+import {
+  Footer,
+  Navbar,
+  Services,
+  Welcome,
+  DepositModal,
+  WithdrawModal,
+} from "./components";
 
 const App = () => {
   return (
