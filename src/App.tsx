@@ -1,4 +1,6 @@
 import { Footer, Navbar, Services, Transactions, Welcome } from "./components";
+import DepositModal from "./components/DepositModal";
+import WithdrawModal from "./components/WithdrawModal";
 
 const App = () => {
   return (
@@ -9,6 +11,8 @@ const App = () => {
       </div>
       {/* <Services /> */}
       {/* <Transactions /> */}
+      <DepositModal />
+      <WithdrawModal />
       <Footer />
     </div>
   );
