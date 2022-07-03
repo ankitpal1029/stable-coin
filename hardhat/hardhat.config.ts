@@ -10,6 +10,8 @@ import "hardhat-deploy";
 
 dotenv.config();
 
+const { PRIVATE_KEY, RINKEBY_URL } = process.env;
+
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
 task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
@@ -32,6 +34,12 @@ const config: HardhatUserConfig = {
       url: process.env.ROPSTEN_URL || "",
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    rinkeby: {
+      url: RINKEBY_URL,
+      accounts:
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      chainId: 4,
     },
   },
   gasReporter: {

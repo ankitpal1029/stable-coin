@@ -20,7 +20,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const ethUsdAggregator = await deployments.get("MockV3Aggregator");
     ethUsdPriceFeedAddress = ethUsdAggregator.address;
   } else {
-    console.log(networkConfig);
+    console.log(chainId);
+    console.log(networkConfig[chainId! as keyof typeof networkConfig]);
     ethUsdPriceFeedAddress =
       networkConfig[chainId! as keyof typeof networkConfig]["ethUsdPriceFeed"];
   }
@@ -46,19 +47,37 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     waitConfirmations: network.name === "hardhat" ? 1 : 6,
   });
 
-  const provider = new ethers.providers.JsonRpcProvider(
-    "http://127.0.0.1:8545/"
-  );
-  const deployerSigner = new ethers.Wallet(
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    provider
-  );
-  const stableCoinContract = new ethers.Contract(
-    StableCoin.address,
-    StableCoin.abi,
-    deployerSigner
-  );
-  stableCoinContract.transferOwnership(Lender.address);
+  if (developmentChains.includes(network.name)) {
+    const provider = new ethers.providers.JsonRpcProvider(
+      "http://127.0.0.1:8545/"
+    );
+    const deployerSigner = new ethers.Wallet(
+      "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+      provider
+    );
+    const stableCoinContract = new ethers.Contract(
+      StableCoin.address,
+      StableCoin.abi,
+      deployerSigner
+    );
+    stableCoinContract.transferOwnership(Lender.address);
+  } else {
+    console.log(process.env.RINKEBY_URL);
+    const provider = new ethers.providers.JsonRpcProvider(
+      process.env.RINKEBY_URL as string
+    );
+    const deployerSigner = new ethers.Wallet(
+      process.env.PRIVATE_KEY as string,
+      provider
+    );
+    const stableCoinContract = new ethers.Contract(
+      StableCoin.address,
+      StableCoin.abi,
+      deployerSigner
+    );
+    await stableCoinContract.transferOwnership(Lender.address);
+    console.log("done");
+  }
 
   // if (
   //   !developmentChains.includes(network.name) &&
