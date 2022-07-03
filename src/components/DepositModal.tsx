@@ -1,5 +1,4 @@
 import React from "react";
-import { Lender } from "../../hardhat/typechain";
 import { useTransactionContext } from "../context/TransactionContext";
 import Input from "./Input";
 import { ethers } from "ethers";
