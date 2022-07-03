@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Lender, MockV3Aggregator, StableCoin } from "../../hardhat/typechain";
+import { Lender, MockV3Aggregator, StableCoin } from "../typechain";
 
 import { ethers } from "ethers";
 import {
@@ -18,7 +18,7 @@ interface ITransactionContext {
   handleChange: (e: any, name: string) => void;
   // sendTransaction: () => void;
   getEthereumContract: () => void;
-  getLendersContract: () => void;
+  getLendersContract: () => ethers.Contract;
   transactions: any[];
   isLoading: boolean;
 }
@@ -40,7 +40,13 @@ export const TransactionContext = createContext<ITransactionContext>({
   handleChange: () => {},
   // sendTransaction: () => {},
   getEthereumContract: () => {},
-  getLendersContract: () => {},
+  getLendersContract: () => {
+    return new ethers.Contract(
+      "0x0",
+      contractABI,
+      new ethers.providers.Web3Provider(ethereum)
+    );
+  },
   transactions: [],
   isLoading: false,
 });
