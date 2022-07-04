@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTransactionContext } from "../context/TransactionContext";
 import Input from "./Input";
 import { ethers } from "ethers";
@@ -12,6 +12,16 @@ function WithdrawModal() {
     isLoading,
     getLendersContract,
   } = useTransactionContext();
+  const [conversionValue, setConversionValue] = useState("");
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      const LendersContract = getLendersContract();
+      const val = await LendersContract.getEthUSDPrice();
+      setConversionValue(val.div(ethers.utils.parseEther("1")).toString());
+    };
+    fetchPrice();
+  }, []);
 
   const handleSubmit = async () => {
     const LendersContract = getLendersContract();
@@ -34,8 +44,7 @@ function WithdrawModal() {
             ✕
           </label>
           <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center ">
-            <p>Amount of ETH in vault: 1ETH</p>
-            <p>YUSD owned: 1000 YUSD</p>
+            <p>Exchange rate 1ETH: {conversionValue} YUSD</p>
             <Input
               placeholder="Amount YUSD to return"
               name="addressTo"

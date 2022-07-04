@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTransactionContext } from "../context/TransactionContext";
 import Input from "./Input";
 import { ethers } from "ethers";
@@ -12,6 +12,16 @@ function DepositModal() {
     isLoading,
     getLendersContract,
   } = useTransactionContext();
+  const [conversionValue, setConversionValue] = useState("");
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      const LendersContract = getLendersContract();
+      const val = await LendersContract.getEthUSDPrice();
+      setConversionValue(val.div(ethers.utils.parseEther("1")).toString());
+    };
+    fetchPrice();
+  }, []);
 
   const handleSubmit = async () => {
     const LendersContract = getLendersContract();
@@ -39,7 +49,7 @@ function DepositModal() {
           </label>
 
           <div className="p-5 sm:w-96 w-full flex flex-col justify-start items-center ">
-            <p>1ETH = 1000YUSD</p>
+            <p>Exchange rate 1ETH: {conversionValue} YUSD</p>
             <Input
               placeholder="Amount ETH to deposit"
               name="addressTo"
